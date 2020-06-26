@@ -1,5 +1,5 @@
-from word_dict import posi_dict,nati_dict,fuci_dict_1,fuci_dict_2
-
+from word_dict import posi_dict,nati_dict,fuci_dict_1,fuci_dict_2,nodict,fanwendict
+import math
 #判断中性词
 def decide_neu(cut_list):
   pl_ans = posi_left_nagative_right(cut_list)
@@ -58,11 +58,66 @@ def posi_right_nagative_left(cut_list):
     return 1
   else:
     return 0
-
+#判别副词、否定词、及相关位置
 def check_before(cut_list, pos):
-  if cut_list[pos-1] in fuci_dict_1:
-    return 4#要改
-  elif cut_list[pos-1] in fuci_dict_2:
-    return 8#要改
+  numofno=0#否定词的数量
+  numoffu = 0#副词的数量
+  jioffu = 0#副词的极性
+  placeofno = 0#否定词的位置
+  placeoffu = 0#副词的位置
+  allno = 0#否定词的综合作用
+  tp =0#词性的综合作用
+  for i in range(pos-5,pos):
+    if cut_list[i] in nodict:
+      numofno += 1
+      if placeofno == 0:
+        placeofno = i
+    if cut_list[i] in fuci_dict_1:
+      numoffu += 1
+      jioffu = 3
+      if placeoffu == 0:
+        placeoffu = i
+    if cut_list[i] in fuci_dict_2:
+      numoffu += 1
+      jioffu = 2.1
+      if placeoffu == 0:
+        placeoffu = i
+  if numofno == 0:
+    allno = 1
   else:
-    return 0#default
+    allno = math.pow(-1,numofno)
+  
+  if placeoffu < placeofno:
+    tp = -2
+  if placeoffu > placeofno:
+    tp = 0.5
+  else:
+    tp = 1
+  return tp*allno*jioffu
+  
+#判别句型因素
+def relation(cut_list):
+  Hw = 0#感叹号的数量
+  Yw = 0#问号的数量
+  ci = 0#反问词的出现情况
+  fi = 1#综合的句型因素
+  for i in range(len(cut_list)):
+    if'!'== cut_list[i]:
+      Hw += 1
+    if '?' == cut_list:
+      Yw += 1
+    if cut_list[i] in fanwendict:
+      ci += 1
+  if Hw == 0:
+    fi *= 1
+  if Hw == 1 or Hw == 2:
+    fi*=2
+  if Yw>0 and ci>0:
+    fi *= -1
+  return fi
+  
+  
+
+
+
+ 

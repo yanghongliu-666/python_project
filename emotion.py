@@ -13,6 +13,7 @@ for i in range(10000):
   posi_emotion_num = 0
   nati_emotion_num = 0
   temp_ci = jieba.lcut(df_train['微博中文内容'][i])
+  ju = fun.relation(temp_ci)
   for j in range(len(temp_ci)):
     if temp_ci[j] in posi_dict:
       weight = check_before()#检查副词
@@ -26,7 +27,8 @@ for i in range(10000):
         nati_emotion_num += 1
       else:
         nati_emotion_num += weight
-  
+  posi_emotion_num *= ju
+  nati_emotion_num *= ju
   if posi_emotion_num > 0 and nati_emotion_num == 0:
     all_emotion_num = 1
   
